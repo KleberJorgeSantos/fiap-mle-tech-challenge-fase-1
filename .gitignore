@@ -17,9 +17,6 @@ mlruns/
 mlartifacts/
 mlflow.db
 models/*.pkl
-models/*.pt
-models/*.joblib
-models/comparison_table.csv
 
 # Jupyter
 .ipynb_checkpoints/
