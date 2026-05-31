@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from src.api.middleware import LatencyMiddleware
 from src.api.schemas import CustomerFeatures, PredictResponse
@@ -58,6 +59,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.add_middleware(LatencyMiddleware)
+
+# Expõe /metrics para o Prometheus coletar (latência, throughput, status HTTP)
+Instrumentator().instrument(app).expose(app)
 
 
 @app.get("/health")

@@ -1,4 +1,7 @@
-.PHONY: lint test train run install mlflow
+.PHONY: lint test train run install mlflow \
+        docker-build docker-up docker-down docker-logs docker-ps docker-clean
+
+# ── Desenvolvimento local ─────────────────────────────────────────────────────
 
 install:
 	uv sync --all-extras
@@ -20,3 +23,23 @@ run:
 
 mlflow:
 	uv run mlflow ui
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+
+docker-build:   ## Constrói as imagens sem subir os containers
+	docker compose build
+
+docker-up:      ## Sobe toda a stack (API + NGINX + Prometheus + Grafana)
+	docker compose up -d --build
+
+docker-down:    ## Para e remove os containers (preserva volumes)
+	docker compose down
+
+docker-logs:    ## Acompanha logs da API em tempo real
+	docker compose logs -f api
+
+docker-ps:      ## Lista status de todos os containers da stack
+	docker compose ps
+
+docker-clean:   ## Para containers E remove volumes (reset completo)
+	docker compose down -v

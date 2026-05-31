@@ -1,0 +1,50 @@
+# ── Version control ──────────────────────────────────────────
+.git/
+.gitignore
+
+# ── Python artifacts ─────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# ── Dev & testes ─────────────────────────────────────────────
+tests/
+notebooks/
+*.ipynb
+.ipynb_checkpoints/
+
+# ── ML experiment tracking (não vai para a imagem) ───────────
+mlruns/
+mlartifacts/
+mlflow.db
+
+# ── Configs locais e segredos ─────────────────────────────────
+.env
+.env.*
+.claude/
+CLAUDE.md
+
+# ── Dados brutos (não necessários para a API) ────────────────
+data/
+
+# ── Docs e relatórios ────────────────────────────────────────
+*.pdf
+model_cards/
+ml_canvas/
+
+# ── IDE ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+
+# ── OS ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

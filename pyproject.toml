@@ -4,23 +4,29 @@ version = "0.1.0"
 description = "Churn prediction pipeline — FIAP Tech Challenge Fase 01"
 requires-python = ">=3.11"
 dependencies = [
+    # ── API / inferência (vai para a imagem Docker) ──────────────
     "torch>=2.3.0",
     "scikit-learn>=1.4.0",
-    "mlflow>=2.13.0",
     "fastapi>=0.111.0",
     "uvicorn[standard]>=0.29.0",
     "pydantic>=2.7.0",
-    "openpyxl>=3.1.0",
     "pandas>=2.2.0",
     "numpy>=1.26.0",
-    "pandera>=0.19.0",
-    "httpx>=0.27.0",
-    "matplotlib>=3.8.0",
-    "seaborn>=0.13.0",
     "joblib>=1.4.0",
+    "prometheus-fastapi-instrumentator>=7.0.0",
 ]
 
 [project.optional-dependencies]
+# Dependências de treino/EDA — instaladas localmente, nunca na imagem Docker.
+# Usar: uv sync --extra train   ou   uv sync --all-extras
+train = [
+    "mlflow>=2.13.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "openpyxl>=3.1.0",
+    "pandera>=0.19.0",
+    "httpx>=0.27.0",
+]
 dev = [
     "pytest>=8.2.0",
     "pytest-cov>=5.0.0",
@@ -56,3 +62,14 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
+
+# ── uv: força torch CPU-only em qualquer plataforma ─────────
+# Sem isso, uv.lock resolve a versão CUDA (~2.5 GB de libs NVIDIA)
+# que é desnecessária para inferência e inviável no e2-micro.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }

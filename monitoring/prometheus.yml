@@ -1,0 +1,26 @@
+# ============================================================
+# monitoring/prometheus.yml — Configuração de scraping
+# ============================================================
+
+global:
+  scrape_interval:     15s   # coleta métricas a cada 15 s
+  evaluation_interval: 15s   # avalia regras de alerta a cada 15 s
+  scrape_timeout:      10s
+
+scrape_configs:
+
+  # ── Prometheus auto-monitora a si mesmo ───────────────────
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ── Churn Prediction API ──────────────────────────────────
+  - job_name: 'churn-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['api:8000']
+    # Labels adicionais que aparecem no Grafana
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'churn-api'

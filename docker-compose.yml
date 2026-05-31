@@ -1,0 +1,93 @@
+# ============================================================
+# docker-compose.yml – Stack completa: API + NGINX + Prometheus + Grafana
+# ============================================================
+# Uso local:
+#   docker compose up -d --build
+#   API:      http://localhost/docs
+#   Grafana:  http://localhost/grafana  (admin / admin)
+#
+# Na VM GCP:
+#   API:      http://<IP_EXTERNO>/docs
+#   Grafana:  http://<IP_EXTERNO>/grafana
+# ============================================================
+
+services:
+
+  # ── FastAPI ────────────────────────────────────────────────
+  api:
+    build: .
+    restart: unless-stopped
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ── NGINX (reverse proxy) ──────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+      - grafana
+    networks:
+      - internal
+
+  # ── Prometheus ─────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+      # Necessário para o UI funcionar via NGINX no sub-path /prometheus/
+      # --web.external-url: gera links do UI com o prefixo correto
+      # --web.route-prefix=/: NGINX já strip o prefixo antes de repassar
+      - --web.external-url=http://localhost/prometheus/
+      - --web.route-prefix=/
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - internal
+
+  # ── Grafana ────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:11.0.0
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin          # troque em produção real
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - internal
+
+# ── Rede interna (serviços não ficam expostos diretamente) ──
+networks:
+  internal:
+    driver: bridge
+
+# ── Volumes persistentes ────────────────────────────────────
+volumes:
+  prometheus_data:
+  grafana_data:
