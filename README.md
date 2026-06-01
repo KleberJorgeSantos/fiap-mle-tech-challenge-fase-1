@@ -14,15 +14,15 @@ do dado bruto até uma API em produção com monitoramento em tempo real.
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![MLflow](https://img.shields.io/badge/MLflow-2.13+-0194E2?style=for-the-badge&logo=mlflow&logoColor=white)](https://mlflow.org)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![AWS EC2](https://img.shields.io/badge/AWS-EC2%20us--east--2-FF9900?style=for-the-badge&logo=amazonwebservices&logoColor=white)](http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/docs)
+[![AWS EC2](https://img.shields.io/badge/AWS-EC2%20us--east--2-FF9900?style=for-the-badge&logo=amazonwebservices&logoColor=white)](http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/docs)
 [![Ruff](https://img.shields.io/badge/Linter-Ruff-D7FF64?style=for-the-badge&logo=ruff&logoColor=black)](https://docs.astral.sh/ruff)
 [![Pytest](https://img.shields.io/badge/Tests-Pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)](https://pytest.org)
 
 <br/>
 
-🚀 **[API — Swagger UI](http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/docs)** &nbsp;|&nbsp;
-📊 **[Grafana Dashboard](http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/grafana)** &nbsp;|&nbsp;
-🔬 **[Prometheus](http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/prometheus)**
+🚀 **[API — Swagger UI](http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/docs)** &nbsp;|&nbsp;
+📊 **[Grafana Dashboard](http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/grafana)** &nbsp;|&nbsp;
+🔬 **[Prometheus](http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/prometheus)**
 
 </div>
 
@@ -202,10 +202,10 @@ make docker-clean   # para containers + remove volumes (reset completo)
 
 | Serviço | URL de Produção |
 |---|---|
-| 📄 **API — Swagger UI** | http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/docs |
-| 💓 **API — Health check** | http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/health |
-| 📊 **Grafana Dashboard** | http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/grafana |
-| 🔬 **Prometheus** | http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/prometheus |
+| 📄 **API — Swagger UI** | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/docs |
+| 💓 **API — Health check** | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/health |
+| 📊 **Grafana Dashboard** | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/grafana |
+| 🔬 **Prometheus** | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/prometheus |
 
 ### 🔑 Credenciais de acesso — Grafana
 
@@ -253,10 +253,10 @@ curl http://localhost/health
 
 | Serviço | Local | AWS (produção) |
 |---|---|---|
-| API + Swagger | http://localhost/docs | http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/docs |
-| Health check | http://localhost/health | http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/health |
-| Grafana | http://localhost/grafana | http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/grafana |
-| Prometheus | http://localhost/prometheus | http://ec2-18-191-113-189.us-east-2.compute.amazonaws.com/prometheus |
+| API + Swagger | http://localhost/docs | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/docs |
+| Health check | http://localhost/health | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/health |
+| Grafana | http://localhost/grafana | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/grafana |
+| Prometheus | http://localhost/prometheus | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/prometheus |
 
 ### Logs e diagnóstico
 
