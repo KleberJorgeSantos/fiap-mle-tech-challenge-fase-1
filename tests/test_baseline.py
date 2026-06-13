@@ -7,7 +7,6 @@ rápidos sem perder cobertura do fluxo principal.
 from unittest.mock import patch
 
 import numpy as np
-import pytest
 from sklearn.dummy import DummyClassifier
 
 from src.models.baseline import train_baselines

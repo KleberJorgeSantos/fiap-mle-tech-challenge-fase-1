@@ -1,8 +1,6 @@
 """Tests for src/tracking/mlflow_utils.py — cobertura via mock do mlflow."""
 
-from unittest.mock import MagicMock, call, patch
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 from src.tracking.mlflow_utils import log_mlp_run, log_sklearn_run, setup_experiment
 

@@ -3,12 +3,10 @@ get_feature_names and to_numpy."""
 
 import numpy as np
 import pandas as pd
-import pytest
 from sklearn.pipeline import Pipeline
 
 from src.config import NUMERIC_FEATURES
 from src.data.preprocessing import build_pipeline, get_feature_names, split_data, to_numpy
-
 
 # ---------------------------------------------------------------------------
 # Helpers

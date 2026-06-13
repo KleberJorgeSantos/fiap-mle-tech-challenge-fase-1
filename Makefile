@@ -7,22 +7,22 @@ install:
 	uv sync --all-extras
 
 lint:
-	uv run ruff check src/ tests/
+	.venv/Scripts/ruff check src/ tests/
 
 format:
-	uv run ruff format src/ tests/
+	.venv/Scripts/ruff format src/ tests/
 
 test:
-	uv run pytest tests/ -v
+	.venv/Scripts/pytest tests/ -v
 
 train:
-	uv run python -m src.train_pipeline
+	.venv/Scripts/python -m src.train_pipeline
 
 run:
-	uv run uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
+	.venv/Scripts/uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 
 mlflow:
-	uv run mlflow ui
+	.venv/Scripts/mlflow ui
 
 # ── Docker ────────────────────────────────────────────────────────────────────
 

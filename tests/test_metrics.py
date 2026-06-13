@@ -7,7 +7,6 @@ import pytest
 
 from src.evaluation.metrics import comparison_table, cost_analysis, evaluate_model
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

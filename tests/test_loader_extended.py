@@ -4,11 +4,9 @@ import os
 import tempfile
 
 import pandas as pd
-import pytest
 
 from src.config import CATEGORICAL_FEATURES, NUMERIC_FEATURES
 from src.data.loader import get_features_target, load_raw
-
 
 # ---------------------------------------------------------------------------
 # Helper: cria CSV sintético compatível com o schema do projeto

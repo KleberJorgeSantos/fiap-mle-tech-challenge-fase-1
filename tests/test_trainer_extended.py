@@ -5,12 +5,10 @@ import os
 import tempfile
 
 import numpy as np
-import pytest
 from sklearn.preprocessing import StandardScaler
 
 from src.models.mlp import ChurnMLP
 from src.models.trainer import load_model, save_model, train_mlp
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -57,8 +55,8 @@ def test_train_mlp_losses_are_floats():
 def test_train_mlp_loss_is_positive():
     model, X_train, y_train, X_val, y_val = _tiny_model_and_data()
     history = train_mlp(model, X_train, y_train, X_val, y_val, epochs=3, batch_size=32)
-    assert all(l > 0 for l in history["train_loss"])
-    assert all(l > 0 for l in history["val_loss"])
+    assert all(loss > 0 for loss in history["train_loss"])
+    assert all(loss > 0 for loss in history["val_loss"])
 
 
 # ---------------------------------------------------------------------------

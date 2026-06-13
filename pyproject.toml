@@ -43,6 +43,9 @@ target-version = "py311"
 select = ["E", "W", "F", "I"]
 ignore = ["E501"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --cov=src --cov-report=term-missing --cov-report=html"
