@@ -25,29 +25,33 @@
 ## Dados de Treinamento
 
 - **Dataset:** Telco Customer Churn — IBM Watson Analytics
-- **Volume:** 7.043 registros, 33 colunas
+- **Volume:** 7.043 registros, 21 colunas
 - **Período:** Dataset estático (snapshot histórico — sem data de corte conhecida)
 - **Split:** 70% treino / 10% validação / 20% teste (estratificado)
 - **Churn rate:** ~26% (desbalanceamento moderado)
 
 **Features utilizadas:**
-- Numéricas: `Tenure Months`, `Monthly Charges`, `Total Charges`
+- Numéricas: `tenure`, `MonthlyCharges`, `TotalCharges`
 - Categóricas: Gender, Senior Citizen, Partner, Dependents, Phone Service, Multiple Lines, Internet Service, Online Security, Online Backup, Device Protection, Tech Support, Streaming TV, Streaming Movies, Contract, Paperless Billing, Payment Method
 
-**Features removidas (leakage/identificadores):**
-- CustomerID, CLTV, Churn Score, Churn Reason (conhecidos apenas após o churn)
+**Features removidas (identificadores):**
+- `customerID` — identificador sem poder preditivo
 
 ## Resultados de Avaliação
 
-*Métricas preenchidas após execução de `make train`.*
+*Métricas do modelo servido (ChurnMLP) no conjunto de teste — geradas por `make train` (`models/comparison_table.csv`).*
 
 | Métrica | Valor |
 |---------|-------|
-| AUC-ROC | — |
-| PR-AUC | — |
-| F1-score | — |
-| Accuracy | — |
-| Business Cost (FP=10, FN=100) | — |
+| AUC-ROC | 0.8388 |
+| PR-AUC | 0.6233 |
+| F1-score | 0.5914 |
+| Accuracy | 0.7921 |
+| Business Cost (FP=10, FN=100) | R$ 17.510 |
+
+> A MLP atinge o **menor custo de negócio entre os modelos não-triviais** (R$ 17.510),
+> à frente de Logistic Regression (R$ 17.780) e Gradient Boosting (R$ 19.180). Tabela
+> comparativa completa no README e em `models/comparison_table.csv`.
 
 **Definição de custo de negócio:**
 - Falso Negativo (FN): cliente churn não detectado → custo estimado R$100 (perda do contrato)

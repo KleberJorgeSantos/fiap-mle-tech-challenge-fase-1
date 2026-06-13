@@ -18,6 +18,11 @@ mlartifacts/
 mlflow.db
 models/*.pkl
 
+# Testing / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
 # Jupyter
 .ipynb_checkpoints/
 

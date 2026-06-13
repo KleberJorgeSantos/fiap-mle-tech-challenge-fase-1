@@ -59,10 +59,10 @@ Identificar proativamente clientes com alto risco de cancelamento (churn) em uma
 - `customerID` — identificador, sem poder preditivo
 
 **Pré-processamento:**
-- `TotalCharges`: conversão de string para float (valores em branco → 0)
+- `TotalCharges`: conversão de string para float (valores em branco → `NaN`)
 - `SeniorCitizen`: int (0/1) → string antes do pipeline sklearn
-- Numéricas: `StandardScaler`
-- Categóricas: `OneHotEncoder` → 46 features após encoding
+- Numéricas: `SimpleImputer(strategy="median")` → `StandardScaler`
+- Categóricas: `SimpleImputer(strategy="most_frequent")` → `OneHotEncoder` → 46 features após encoding
 
 ---
 
@@ -126,7 +126,7 @@ Custo total = FP × R$10 + FN × R$100
 
 **Modo:** API REST (FastAPI) — endpoint `/predict`  
 **Input:** JSON com os 19 campos do cliente (camelCase, aliases do CSV original)  
-**Output:** `{ "churn_probability": 0.73, "churn_predicted": true }`  
+**Output:** `{ "churn_probability": 0.73, "churn_prediction": 1, "model_version": "1.0.0" }`  
 **Latência alvo:** p99 < 500ms  
 **Artefatos carregados no startup:**
 - `models/churn_mlp.pt` — state_dict PyTorch

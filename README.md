@@ -97,6 +97,25 @@ data/WA_Fn-UseC_-Telco-Customer-Churn.csv
                                       provisionados
 ```
 
+### Estratégia de Deploy: **real-time (REST)**
+
+A inferência foi implementada como **serviço REST em tempo real** (FastAPI `/predict`),
+e não em modo batch. Justificativa:
+
+| Critério | Por que real-time |
+|---|---|
+| **Decisão de negócio** | A ação de retenção é tomada *on-demand* (ex.: cliente liga no call center, abre o app) — exige resposta imediata, não um score do dia anterior |
+| **Latência** | SLO alvo de **p99 < 500 ms** por requisição, viável com a MLP CPU-only |
+| **Volume** | Score individual por cliente; payload pequeno e tráfego moderado cabem num único container |
+| **Integração** | Endpoint HTTP é trivial de consumir pelo CRM / sistemas comerciais |
+| **Observabilidade** | `/metrics` + Prometheus + Grafana monitoram latência e throughput em tempo real |
+
+> **Alternativa batch** (não adotada): scoring periódico (ex.: semanal) de toda a base,
+> gravando resultados numa tabela. Faria sentido para campanhas de marketing em massa,
+> mas não atende o caso de uso prioritário de retenção on-demand. O pipeline atual pode
+> ser reaproveitado em batch sem alteração — basta chamar `pipeline.transform` + modelo
+> sobre um lote em vez de uma linha.
+
 ---
 
 ## 📁 Estrutura do Projeto
@@ -381,15 +400,17 @@ provisionados automaticamente ao iniciar o container.
 
 ## 🤖 Modelos
 
-| Modelo | AUC-ROC | PR-AUC | F1 |
-|---|:---:|:---:|:---:|
-| 🧠 MLP (PyTorch) | — | — | — |
-| 🌲 Gradient Boosting | — | — | — |
-| 🌳 Random Forest | — | — | — |
-| 📈 Logistic Regression | — | — | — |
-| 🎲 DummyClassifier (baseline) | — | — | — |
+| Modelo | AUC-ROC | PR-AUC | F1 | Accuracy | Custo (R$) |
+|---|:---:|:---:|:---:|:---:|:---:|
+| 🧠 **MLP (PyTorch)** — *servido* | 0.8388 | 0.6233 | 0.5914 | 0.7921 | **17.510** |
+| 📈 Logistic Regression | 0.8424 | 0.6354 | 0.6009 | 0.8048 | 17.780 |
+| 🌲 Gradient Boosting | 0.8418 | 0.6566 | 0.5783 | 0.8013 | 19.180 |
+| 🌳 Random Forest | 0.8226 | 0.6133 | 0.5585 | 0.7857 | 19.490 |
+| 🎲 DummyClassifier (baseline) | 0.5000 | 0.2654 | 0.0000 | 0.7346 | 37.400 |
 
-> *Métricas preenchidas após `make train`.*
+> Custo de negócio = `FP × R$10 + FN × R$100`. A **MLP tem o menor custo entre os modelos
+> não-triviais**, o critério de seleção priorizado dado o impacto assimétrico do churn.
+> Métricas geradas por `make train` (`models/comparison_table.csv`).
 
 ---
 
