@@ -3804,6 +3804,7 @@ dependencies = [
     { name = "joblib" },
     { name = "numpy" },
     { name = "pandas" },
+    { name = "pandera" },
     { name = "prometheus-fastapi-instrumentator" },
     { name = "pydantic" },
     { name = "scikit-learn" },
@@ -3825,7 +3826,6 @@ train = [
     { name = "matplotlib" },
     { name = "mlflow" },
     { name = "openpyxl" },
-    { name = "pandera" },
     { name = "seaborn" },
 ]
 
@@ -3841,7 +3841,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.26.0" },
     { name = "openpyxl", marker = "extra == 'train'", specifier = ">=3.1.0" },
     { name = "pandas", specifier = ">=2.2.0" },
-    { name = "pandera", marker = "extra == 'train'", specifier = ">=0.19.0" },
+    { name = "pandera", specifier = ">=0.19.0" },
     { name = "prometheus-fastapi-instrumentator", specifier = ">=7.0.0" },
     { name = "pydantic", specifier = ">=2.7.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.0" },

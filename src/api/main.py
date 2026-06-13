@@ -5,12 +5,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pandera.pandas as pa
 from fastapi import FastAPI, HTTPException
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from src.api.middleware import LatencyMiddleware
 from src.api.schemas import CustomerFeatures, PredictResponse
 from src.config import CATEGORICAL_FEATURES, MODEL_DIR, NUMERIC_FEATURES
+from src.data.loader import validate_schema
 from src.models.trainer import load_model, predict_proba
 
 logging.basicConfig(
@@ -97,6 +99,19 @@ def predict(customer: CustomerFeatures):
     }
 
     df = pd.DataFrame([row])
+
+    try:
+        df = validate_schema(df)
+    except pa.errors.SchemaError as exc:
+        logger.warning("Schema validation failed: %s", exc)
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "message": "Dados de entrada inválidos",
+                "failures": exc.failure_cases.to_dict(orient="records"),
+            },
+        ) from exc
+
     X = _state["pipeline"].transform(df)
     X_arr = X.toarray() if hasattr(X, "toarray") else np.asarray(X)
     proba = float(predict_proba(_state["model"], X_arr)[0])
