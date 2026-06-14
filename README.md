@@ -408,9 +408,17 @@ provisionados automaticamente ao iniciar o container.
 | 🌳 Random Forest | 0.8226 | 0.6133 | 0.5585 | 0.7857 | 19.490 |
 | 🎲 DummyClassifier (baseline) | 0.5000 | 0.2654 | 0.0000 | 0.7346 | 37.400 |
 
-> Custo de negócio = `FP × R$10 + FN × R$100`. A **MLP tem o menor custo entre os modelos
-> não-triviais**, o critério de seleção priorizado dado o impacto assimétrico do churn.
-> Métricas geradas por `make train` (`models/comparison_table.csv`).
+> **Custo de negócio = `FP × R$10 + FN × R$100`** — penaliza cada tipo de erro pelo seu
+> impacto real:
+> - **FP (Falso Positivo)** — cliente que **não** ia cancelar é sinalizado como risco e recebe
+>   uma ação de retenção desnecessária → custo de **R$ 10** (o gasto da oferta/contato).
+> - **FN (Falso Negativo)** — cliente que **ia** cancelar passa despercebido e nenhuma ação é
+>   tomada → custo de **R$ 100** (a perda do contrato).
+>
+> Como o FN é **10× mais caro** que o FP, o modelo é selecionado pelo **menor custo total**, não
+> pela accuracy. A **MLP tem o menor custo entre os modelos não-triviais**, o critério priorizado
+> dado o impacto assimétrico do churn. Métricas geradas por `make train`
+> (`models/comparison_table.csv`).
 
 ---
 
