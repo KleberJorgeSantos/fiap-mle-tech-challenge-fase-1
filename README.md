@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔮 Churn Prediction
+# Churn Prediction
 
 ### FIAP Tech Challenge — Fase 01
 
@@ -64,7 +64,7 @@ Falso Positivo.
 
 | Modelo | AUC-ROC | PR-AUC | F1 | Accuracy | Custo (R$) |
 |---|:---:|:---:|:---:|:---:|:---:|
-| 🧠 **MLP (PyTorch)** — *servido* | 0.8388 | 0.6233 | 0.5914 | 0.7921 | **17.510** |
+| 🧠 **MLP (PyTorch)** — *servido* | 0.8398 | 0.6312 | 0.5969 | 0.7977 | **17.520** |
 | 📈 Logistic Regression | 0.8424 | 0.6354 | 0.6009 | 0.8048 | 17.780 |
 | 🌲 Gradient Boosting | 0.8418 | 0.6566 | 0.5783 | 0.8013 | 19.180 |
 | 🌳 Random Forest | 0.8226 | 0.6133 | 0.5585 | 0.7857 | 19.490 |

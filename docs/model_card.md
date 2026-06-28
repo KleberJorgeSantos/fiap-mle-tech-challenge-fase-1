@@ -43,13 +43,13 @@
 
 | Métrica | Valor |
 |---------|-------|
-| AUC-ROC | 0.8388 |
-| PR-AUC | 0.6233 |
-| F1-score | 0.5914 |
-| Accuracy | 0.7921 |
-| Business Cost (FP=10, FN=100) | R$ 17.510 |
+| AUC-ROC | 0.8398 |
+| PR-AUC | 0.6312 |
+| F1-score | 0.5969 |
+| Accuracy | 0.7977 |
+| Business Cost (FP=10, FN=100) | R$ 17.520 |
 
-> A MLP atinge o **menor custo de negócio entre os modelos não-triviais** (R$ 17.510),
+> A MLP atinge o **menor custo de negócio entre os modelos não-triviais** (R$ 17.520),
 > à frente de Logistic Regression (R$ 17.780) e Gradient Boosting (R$ 19.180). Tabela
 > comparativa completa no README e em `models/comparison_table.csv`.
 
