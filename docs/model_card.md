@@ -64,6 +64,16 @@
 - Dados geograficamente concentrados nos EUA — pode não generalizar para outros mercados
 - Desbalanceamento de classe (~26% churn) pode afetar o desempenho em populações com taxas muito diferentes
 
+## Estratégia para Classes Desbalanceadas
+
+Dado o desbalanceamento moderado (~26% churn), optou-se por **não** aplicar reamostragem (SMOTE/over/undersampling) nem ponderação de classe. A robustez é garantida por:
+
+1. **Split e validação cruzada estratificados** — preservam a proporção das classes em treino/validação/teste e nos folds da CV.
+2. **Métricas adequadas a desbalanceamento** — avaliação por **PR-AUC** e **F1** (não apenas accuracy), além de AUC-ROC.
+3. **Análise de custo de negócio assimétrico** — FN custa 10× o FP (R$100 vs. R$10), o que orienta o ajuste de threshold para o ponto de menor custo esperado.
+
+Reamostragem foi considerada desnecessária para esse nível de desbalanceamento; caso o modelo seja aplicado a populações com churn rate muito diferente, recomenda-se reavaliar essa decisão.
+
 ## Vieses Identificados
 
 - **Viés de seleção:** dataset representa apenas clientes existentes — clientes que nunca contrataram não estão representados

@@ -31,14 +31,13 @@ do dado bruto até uma API em produção com monitoramento em tempo real.
 ## 📋 Sumário
 
 - [Contexto](#-contexto)
+- [Resultados](#-resultados)
 - [Arquitetura](#-arquitetura)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Quick Start](#-quick-start)
-- [Ambiente de Produção](#-ambiente-de-produção-aws-ec2)
-- [Deploy com Docker](#-deploy-com-docker)
+- [Deploy (AWS + Docker)](#-deploy-aws--docker)
 - [API Reference](#-api-reference)
 - [Monitoramento](#-monitoramento)
-- [Modelos](#-modelos)
 - [Boas Práticas](#-boas-práticas)
 - [Dependências](#-dependências)
 
@@ -54,6 +53,33 @@ Uma operadora de telecomunicações está perdendo clientes. Este projeto constr
 | 🎯 **Target** | `Churn` — `0` manteve · `1` cancelou |
 | 📊 **Churn rate** | ~26% (classes desbalanceadas) |
 | 💰 **Custo de negócio** | FP = R$ 10 · FN = R$ 100 |
+
+---
+
+## 🏆 Resultados
+
+O modelo é selecionado pelo **menor custo de negócio**, não pela accuracy — porque um
+Falso Negativo (cliente que cancela e passa despercebido) é **10× mais caro** que um
+Falso Positivo.
+
+| Modelo | AUC-ROC | PR-AUC | F1 | Accuracy | Custo (R$) |
+|---|:---:|:---:|:---:|:---:|:---:|
+| 🧠 **MLP (PyTorch)** — *servido* | 0.8388 | 0.6233 | 0.5914 | 0.7921 | **17.510** |
+| 📈 Logistic Regression | 0.8424 | 0.6354 | 0.6009 | 0.8048 | 17.780 |
+| 🌲 Gradient Boosting | 0.8418 | 0.6566 | 0.5783 | 0.8013 | 19.180 |
+| 🌳 Random Forest | 0.8226 | 0.6133 | 0.5585 | 0.7857 | 19.490 |
+| 🎲 DummyClassifier (baseline) | 0.5000 | 0.2654 | 0.0000 | 0.7346 | 37.400 |
+
+> **Custo de negócio = `FP × R$10 + FN × R$100`** — penaliza cada tipo de erro pelo seu
+> impacto real:
+> - **FP (Falso Positivo)** — cliente que **não** ia cancelar é sinalizado como risco e recebe
+>   uma ação de retenção desnecessária → custo de **R$ 10** (o gasto da oferta/contato).
+> - **FN (Falso Negativo)** — cliente que **ia** cancelar passa despercebido e nenhuma ação é
+>   tomada → custo de **R$ 100** (a perda do contrato).
+>
+> A **MLP tem o menor custo entre os modelos não-triviais** — o critério priorizado dado o
+> impacto assimétrico do churn — uma redução de **53%** frente ao baseline. Métricas geradas
+> por `make train` (`models/comparison_table.csv`).
 
 ---
 
@@ -159,7 +185,10 @@ tech_challenge_1/
 
 > Requer **Python 3.11+** e [uv](https://docs.astral.sh/uv/) instalado.
 
-### 🪟 Pré-requisito: Windows — instalar o `make`
+<details>
+<summary><strong>🪟 Windows — instalar o <code>make</code> (pré-requisito)</strong></summary>
+
+<br/>
 
 O `make` **não vem instalado por padrão no Windows**. Antes de rodar qualquer comando `make`, instale o **GnuWin32**:
 
@@ -179,19 +208,47 @@ C:\Program Files (x86)\GnuWin32\bin
 
 > **Como verificar:** abra um novo terminal e execute `make --version`. Se retornar a versão, está pronto.
 
----
+</details>
+
+Há duas formas de rodar o projeto localmente:
+
+#### Opção A — Apenas a API (uv)
+
+Mais leve, ideal para desenvolvimento. Sobe só a FastAPI, sem monitoramento.
 
 ```bash
 # 1. Instalar dependências
 uv sync --all-extras
 
-# 2. Treinar o modelo
+# 2. Treinar o modelo (gera os artefatos em models/)
 make train
 
-# 3. Subir a API localmente
+# 3. Subir a API
 make run
 # → http://localhost:8000/docs
 ```
+
+#### Opção B — Stack completa (Docker)
+
+Sobe **API + NGINX + Prometheus + Grafana** — a mesma stack que roda em produção.
+Requer **Docker Desktop** (veja a nota de Windows abaixo).
+
+```bash
+# 1. Instalar dependências e treinar (artefatos são copiados no build da imagem)
+uv sync --all-extras
+make train
+
+# 2. Subir toda a stack em background
+make docker-up
+
+# 3. Verificar os containers e testar
+make docker-ps
+curl http://localhost/health
+# → http://localhost/docs  (API)  ·  /grafana  ·  /prometheus
+```
+
+> 📖 Detalhes de cada serviço, URLs de produção e diagnóstico na seção
+> [**Deploy (AWS + Docker)**](#-deploy-aws--docker).
 
 ### 🛠️ Comandos disponíveis
 
@@ -213,37 +270,45 @@ make docker-build   # build das imagens sem subir
 make docker-clean   # para containers + remove volumes (reset completo)
 ```
 
+> 🪟 **Windows:** os comandos `docker` exigem o
+> [**Docker Desktop**](https://www.docker.com/products/docker-desktop/) instalado e em
+> execução. Ele usa o **WSL2** como backend (kernel Linux necessário para rodar os
+> containers) — habilite-o na instalação do Docker Desktop. Os comandos de ML/API
+> (`make train`, `make run`, `make test`) rodam direto com o `uv`, sem necessidade de
+> Docker/WSL2.
+
 ---
 
-## ☁️ Ambiente de Produção (AWS EC2)
+## 🚀 Deploy (AWS + Docker)
 
-> A stack completa está rodando em uma instância EC2 na região `us-east-2` via Docker Compose.
+A mesma stack Docker Compose roda **localmente** e **em produção na AWS EC2**
+(`us-east-2`) — toda roteada por NGINX na porta 80.
 
-| Serviço | URL de Produção |
-|---|---|
-| 📄 **API — Swagger UI** | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/docs |
-| 💓 **API — Health check** | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/health |
-| 📊 **Grafana Dashboard** | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/grafana |
-| 🔬 **Prometheus** | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/prometheus |
+### 🌐 URLs — local vs. produção
 
-### 🔑 Credenciais de acesso — Grafana
+| Serviço | Local | AWS (produção) |
+|---|---|---|
+| 📄 API + Swagger | http://localhost/docs | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/docs |
+| 💓 Health check | http://localhost/health | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/health |
+| 📊 Grafana | http://localhost/grafana | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/grafana |
+| 🔬 Prometheus | http://localhost/prometheus | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/prometheus |
+
+> 🔑 **Grafana** — usuário `admin` / senha `admin`. O dashboard **"Churn Prediction API"**
+> já está provisionado: faça login e navegue em **Dashboards → Churn Prediction API**.
+
+#### 🔑 Credenciais de acesso — Grafana
 
 | Campo | Valor |
-|:---:|:---:|
+|---|---|
 | Usuário | `users` |
 | Senha | `users` |
 
-> 💡 O dashboard **"Churn Prediction API"** já está provisionado automaticamente.
-> Faça login e navegue em **Dashboards → Churn Prediction API**.
+> Usuário de acesso cadastrado para o professor avaliar o dashboard.
 
----
-
-## 🐳 Deploy com Docker
+### 🐳 Subir a stack
 
 > **Pré-requisito:** rodar `make train` pelo menos uma vez para gerar
 > `models/churn_mlp.pt` e `models/churn_mlp_pipeline.joblib` antes do build.
-
-### Fluxo completo
 
 ```bash
 # 1. Treinar o modelo (primeira vez ou ao atualizar)
@@ -267,15 +332,6 @@ curl http://localhost/health
 | `nginx` | `nginx:1.27-alpine` | `Up` — porta `0.0.0.0:80` |
 | `prometheus` | `prom/prometheus:v2.52.0` | `Up` — rede interna |
 | `grafana` | `grafana/grafana:11.0.0` | `Up` — rede interna |
-
-### URLs locais vs. produção
-
-| Serviço | Local | AWS (produção) |
-|---|---|---|
-| API + Swagger | http://localhost/docs | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/docs |
-| Health check | http://localhost/health | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/health |
-| Grafana | http://localhost/grafana | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/grafana |
-| Prometheus | http://localhost/prometheus | http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/prometheus |
 
 ### Logs e diagnóstico
 
@@ -395,30 +451,6 @@ provisionados automaticamente ao iniciar o container.
 |---|---|---|
 | `churn-api` | `http://api:8000/metrics` | 15 s |
 | `prometheus` | `http://localhost:9090/metrics` | 15 s |
-
----
-
-## 🤖 Modelos
-
-| Modelo | AUC-ROC | PR-AUC | F1 | Accuracy | Custo (R$) |
-|---|:---:|:---:|:---:|:---:|:---:|
-| 🧠 **MLP (PyTorch)** — *servido* | 0.8388 | 0.6233 | 0.5914 | 0.7921 | **17.510** |
-| 📈 Logistic Regression | 0.8424 | 0.6354 | 0.6009 | 0.8048 | 17.780 |
-| 🌲 Gradient Boosting | 0.8418 | 0.6566 | 0.5783 | 0.8013 | 19.180 |
-| 🌳 Random Forest | 0.8226 | 0.6133 | 0.5585 | 0.7857 | 19.490 |
-| 🎲 DummyClassifier (baseline) | 0.5000 | 0.2654 | 0.0000 | 0.7346 | 37.400 |
-
-> **Custo de negócio = `FP × R$10 + FN × R$100`** — penaliza cada tipo de erro pelo seu
-> impacto real:
-> - **FP (Falso Positivo)** — cliente que **não** ia cancelar é sinalizado como risco e recebe
->   uma ação de retenção desnecessária → custo de **R$ 10** (o gasto da oferta/contato).
-> - **FN (Falso Negativo)** — cliente que **ia** cancelar passa despercebido e nenhuma ação é
->   tomada → custo de **R$ 100** (a perda do contrato).
->
-> Como o FN é **10× mais caro** que o FP, o modelo é selecionado pelo **menor custo total**, não
-> pela accuracy. A **MLP tem o menor custo entre os modelos não-triviais**, o critério priorizado
-> dado o impacto assimétrico do churn. Métricas geradas por `make train`
-> (`models/comparison_table.csv`).
 
 ---
 
