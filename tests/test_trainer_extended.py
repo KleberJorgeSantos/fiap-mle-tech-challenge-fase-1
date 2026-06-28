@@ -83,6 +83,16 @@ def test_train_mlp_runs_requested_epochs_when_no_early_stop():
     assert len(history["train_loss"]) == 5
 
 
+def test_train_mlp_logs_every_ten_epochs():
+    """Com >=10 epochs e sem early stop, exercita o log periódico (epoch % 10)."""
+    model, X_train, y_train, X_val, y_val = _tiny_model_and_data()
+    history = train_mlp(
+        model, X_train, y_train, X_val, y_val,
+        epochs=10, batch_size=32, patience=1000,
+    )
+    assert len(history["train_loss"]) == 10
+
+
 # ---------------------------------------------------------------------------
 # save_model / load_model — round-trip
 # ---------------------------------------------------------------------------
