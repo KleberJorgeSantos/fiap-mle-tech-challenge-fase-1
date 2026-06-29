@@ -20,6 +20,7 @@ do dado bruto até uma API em produção com monitoramento em tempo real.
 
 <br/>
 
+🎬 **[Vídeo de Demonstração (YouTube)](https://youtu.be/BVvGkcEbC0Q)** &nbsp;|&nbsp;
 🚀 **[API — Swagger UI](http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/docs)** &nbsp;|&nbsp;
 📊 **[Grafana Dashboard](http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/grafana)** &nbsp;|&nbsp;
 🔬 **[Prometheus](http://ec2-3-21-102-246.us-east-2.compute.amazonaws.com/prometheus)**
@@ -30,6 +31,7 @@ do dado bruto até uma API em produção com monitoramento em tempo real.
 
 ## 📋 Sumário
 
+- [Vídeo de Demonstração](#-vídeo-de-demonstração)
 - [Contexto](#-contexto)
 - [Resultados](#-resultados)
 - [Arquitetura](#-arquitetura)
@@ -40,6 +42,17 @@ do dado bruto até uma API em produção com monitoramento em tempo real.
 - [Monitoramento](#-monitoramento)
 - [Boas Práticas](#-boas-práticas)
 - [Dependências](#-dependências)
+
+---
+
+## 🎬 Vídeo de Demonstração
+
+Apresentação completa do projeto — arquitetura, pipeline de ML, API em produção na AWS
+e monitoramento com Grafana/Prometheus:
+
+▶️ **https://youtu.be/BVvGkcEbC0Q**
+
+[![Vídeo de Demonstração](https://img.youtube.com/vi/BVvGkcEbC0Q/maxresdefault.jpg)](https://youtu.be/BVvGkcEbC0Q)
 
 ---
 
